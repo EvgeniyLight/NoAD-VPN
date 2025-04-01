@@ -31,7 +31,7 @@ def set_dns_windows(dns_servers):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 encoding='cp866',
-                timeout=10
+                timeout=15
             )
             return True, result.stdout
         except subprocess.CalledProcessError as e:
@@ -39,54 +39,39 @@ def set_dns_windows(dns_servers):
         except Exception as e:
             return False, str(e)
 
-    def get_active_interface():
-        success, output = run_cmd(
-            'powershell "Get-NetAdapter | Where-Object {$_.Status -eq \'Up\'} | '
-            'Select-Object -ExpandProperty Name | Select-Object -First 1"'
-        )
-        if success and output.strip():
-            return output.strip()
-        return None
-
     try:
-        interface_name = get_active_interface()
-        if not interface_name:
-            print("Не удалось определить активный сетевой интерфейс")
+        success, output = run_cmd(
+            'powershell "Get-NetAdapter -Physical | '
+            'Where-Object {$_.Status -eq \'Up\'} | '
+            'Select-Object -First 1 | '
+            'Select-Object -ExpandProperty Name"'
+        )
+        
+        if not success or not output.strip():
             return False
-
-        print(f"Найден активный интерфейс: {interface_name}")
-
+            
+        interface_name = output.strip()
+        
         commands = [
             f'netsh interface ipv4 set dnsservers name="{interface_name}" source=dhcp',
-            f'netsh interface ipv4 set dnsservers name="{interface_name}" source=static addr={dns_servers[0]} validate=no'
+            f'netsh interface ipv4 set dnsservers name="{interface_name}" source=static addr={dns_servers[0]} primary validate=no',
         ]
         
-        if len(dns_servers) > 1:
+        for i, dns in enumerate(dns_servers[1:], start=2):
             commands.append(
-                f'netsh interface ipv4 add dnsservers name="{interface_name}" addr={dns_servers[1]} index=2 validate=no'
+                f'netsh interface ipv4 add dnsservers name="{interface_name}" addr={dns} index={i} validate=no'
             )
-
         for cmd in commands:
-            success, output = run_cmd(cmd)
+            success, _ = run_cmd(cmd)
             if not success:
-                print(f"Ошибка выполнения команды: {cmd}")
-                print(f"Ошибка: {output}")
                 return False
 
-        success, output = run_cmd(f'netsh interface ipv4 show dnsservers name="{interface_name}"')
-        if success:
-            print("Текущие DNS серверы:")
-            print(output)
-        else:
-            print("Не удалось проверить установленные DNS серверы")
-
-        print(f"DNS серверы успешно изменены на: {dns_servers}")
+        run_cmd(f'netsh interface ipv4 show dnsservers "{interface_name}"')
         return True
 
     except Exception as e:
-        print(f"Критическая ошибка: {str(e)}")
         return False
-
+    
 def reset_dns_windows():
     return set_dns_windows(DEFAULT_DNS)
 

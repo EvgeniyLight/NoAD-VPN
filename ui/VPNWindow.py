@@ -50,7 +50,6 @@ class VPNWindow(QWidget):
 
         self.setWindowTitle("NoAD VPN")
         self.setFixedSize(400, 500)
-        # self.setStyleSheet("background-color: #1E1E1E; color: white; font-family: Arial, sans-serif;")
         self.setStyleSheet("color: white; font-family: Arial, sans-serif;")
 
         self.layout = QVBoxLayout()
