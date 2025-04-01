@@ -21,21 +21,31 @@ from constants.constants import VPN_INFO_PATH, USER_INFO_PATH
 def load_vpn_list():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(os.path.dirname(current_dir))
-    file_path = os.path.join(project_root, VPN_INFO_PATH.lstrip("./")) # _LINUX_VPN_INFO_PATH
+    file_path = os.path.join(project_root, VPN_INFO_PATH.lstrip("./")) 
     with open(VPN_INFO_PATH, "r") as file:
         return json.load(file)
     
 def get_dont_show_update(default=False):
-    if not os.path.exists(USER_INFO_PATH): # _LINUX_USER_INFO_PATH
+    if not os.path.exists(USER_INFO_PATH): 
         return default
 
     try:
-        with open(USER_INFO_PATH, "r") as f:  # _LINUX_USER_INFO_PATH
+        with open(USER_INFO_PATH, "r") as f:  
             data = json.load(f)
             return data.get("dont_show_update", default)
     except (json.JSONDecodeError, FileNotFoundError):
         return default
     
+def get_dont_show_warning(default=False):
+    if not os.path.exists(USER_INFO_PATH): 
+        return default
+
+    try:
+        with open(USER_INFO_PATH, "r") as f:  
+            data = json.load(f)
+            return data.get("dont_show_warning", default)
+    except (json.JSONDecodeError, FileNotFoundError):
+        return default
 
 def get_prem_auth():
     try:

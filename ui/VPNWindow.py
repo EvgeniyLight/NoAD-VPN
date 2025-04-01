@@ -16,7 +16,7 @@
 
 from core.general.statistics.statistics import run_once_per_day
 from core.general.AppUpdater import AppUpdater
-from core.general.Data_loader import get_dont_show_update
+from core.general.Data_loader import get_dont_show_update, get_dont_show_warning
 from core.general.Network_utils import open_telegram_link
 
 from ui.styles.VpnSelectorStyler import StyledComboBox
@@ -29,6 +29,7 @@ from ui.styles.ButtonStyler import ButtonStyler
 from ui.elements.UpdateNotificationWidget import UpdateNotificationWidget
 from ui.elements.Premium_manager import PremiumManager
 from ui.elements.AdGuard import AdBlockerSwitch
+from ui.elements.NeonWarningOverlay import NeonWarningOverlay
 
 from ui.handlers.VPNListHandler import VPNListHandler
 from ui.handlers.CopyHandler import copy_to_clipboard
@@ -62,7 +63,7 @@ class VPNWindow(QWidget):
         if update_data and get_dont_show_update() != True:
             update_widget = UpdateNotificationWidget(update_data)
             update_widget.exec() 
-            
+
         self.support_label = QLabel()
         SupportLabelStyler.apply_style(self.support_label)
         self.support_label.linkActivated.connect(open_telegram_link) 
@@ -161,6 +162,10 @@ class VPNWindow(QWidget):
 
         self.connect_button.clicked.connect(self.vpn_manager.handle_connect)
         self.disconnect_button.clicked.connect(self.vpn_manager.handle_disconnect)
+        
+        dont_show_warning = get_dont_show_warning()
+        if dont_show_warning != True:
+            self.show_warning()
     
     def initialize_vpn_dialog_handler(self):
         self.vpn_dialog_handler = VPNDialogHandler(
@@ -233,3 +238,14 @@ class VPNWindow(QWidget):
         painter.translate(self.width(), 0)
         painter.scale(-1, 1)
         painter.drawRect(0, 0, 50, self.height())
+
+
+    def show_warning(self):
+        # Создаем и показываем оверлей
+        self.overlay = NeonWarningOverlay(self)
+        self.overlay.setGeometry(self.rect())  # Занимает всю область окна
+        
+        # При изменении размера окна обновляем размер оверлея
+        self.resizeEvent = lambda event: self.overlay.setGeometry(self.rect())
+        
+        self.overlay.show()

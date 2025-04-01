@@ -19,14 +19,31 @@ import sys, os
 def is_linux():
     return sys.platform.startswith('linux')
 
+def is_windows():
+    return sys.platform.startswith('win32') or sys.platform.startswith('cygwin')
+
 def is_root():
-    return os.geteuid() == 0
+    if is_linux():
+        return os.geteuid() == 0
+    elif is_windows():
+        try:
+            import ctypes
+            return ctypes.windll.shell32.IsUserAnAdmin() != 0
+        except:
+            return False
+    return True  
 
 
 if __name__ == "__main__":
-    if is_linux() and not is_root():
-        print("Ошибка: Для корректной работы программа должна быть запущена с правами администратора.")
-        print("Пожалуйста, запустите программу с помощью sudo")
+    if not is_root():
+        if is_linux():
+            print("Ошибка: Для корректной работы программа должна быть запущена с правами администратора.")
+            print("Пожалуйста, запустите программу с помощью sudo")
+        elif is_windows():
+            print("Ошибка: Программа должна быть запущена от имени администратора.")
+            print("Пожалуйста, запустите программу с правами администратора")
+        else:
+            print("Ошибка: Программа требует прав администратора")
         sys.exit(1)
 
     main()

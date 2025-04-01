@@ -59,7 +59,8 @@ def start_vpn(config_file, login, password, timeout=45):
             stderr=subprocess.STDOUT,
             text=True,
             bufsize=1,
-            universal_newlines=True
+            universal_newlines=True,
+            creationflags=subprocess.CREATE_NO_WINDOW
         )
         print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] PID: {process.pid}")
 

@@ -11,10 +11,12 @@ ui/styles/__pycache__
 ui/elements/__pycache__
 ui/handlers/__pycache__
 
-build/
-dist/
-
 constants/__pycache__
 
+build/
 dist/
 nutka.py
+NoAD_VPN_Installer.exe
+app.manifest
+icon.ico
+installer.iss

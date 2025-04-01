@@ -1,7 +1,8 @@
 {
-    "user_id": "4ad7c8b3bc31d9cc595dee23e4c9b7e6",
-    "is_premium": true,
+    "user_id": "",
+    "is_premium": false,
     "login": "*P#0DfflzM^z",
     "password": "*P#0DfflzM^z",
-    "dont_show_update": true
+    "dont_show_update": false,
+    "dont_show_warning": false
 }
