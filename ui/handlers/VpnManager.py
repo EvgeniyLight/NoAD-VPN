@@ -20,12 +20,10 @@ from core.general.ConfigManager import ConfigManager
 from core.general.VPNConnectionThread import VPNConnectionThread
 
 from ui.elements.Captcha import CaptchaWidget
-
 from ui.handlers.ConnectionHandler import ConnectionHandler
 
 from PyQt6.QtCore import QTimer
 
-import time
 
 class VPNManager:
     def __init__(self, layout, status_label, connect_button, disconnect_button, vpn_select, premium_button,

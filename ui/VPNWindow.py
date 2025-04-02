@@ -240,6 +240,28 @@ class VPNWindow(QWidget):
         painter.drawRect(0, 0, 50, self.height())
 
 
+    def closeEvent(self, event):
+        try:
+                import subprocess
+                result = subprocess.run(
+                    ["pgrep", "openvpn"],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True
+                )
+
+                if result.returncode == 0:
+                    pid = result.stdout.strip()
+                    print(f"Найден процесс openvpn с PID: {pid}")
+                    subprocess.run(["kill", pid])
+                    print(f"Процесс openvpn убит.")
+                else:
+                    print("Процесс openvpn не найден.")
+                    event.accept()  
+        except Exception as e:
+                print(f"Ошибка при поиске или завершении процесса openvpn: {e}")
+                event.accept()  
+    
     def show_warning(self):
         # Создаем и показываем оверлей
         self.overlay = NeonWarningOverlay(self)

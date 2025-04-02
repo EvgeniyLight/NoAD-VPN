@@ -18,7 +18,7 @@ import os, subprocess, time
 from datetime import datetime
 from constants.constants import CONFIG_DIR_PATH, OVPN_PATH
 
-# CONFIG_DIR = CONFIG_DIR_PATH # for build deb
+CONFIG_DIR = CONFIG_DIR_PATH # for build deb
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)) 
 OVPN_PATH = os.path.join(BASE_DIR, OVPN_PATH) # for develop
 CONFIG_DIR =  os.path.join(BASE_DIR, "../." + CONFIG_DIR_PATH) # for develop

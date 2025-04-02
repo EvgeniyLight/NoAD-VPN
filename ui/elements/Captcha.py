@@ -18,14 +18,15 @@ from PyQt6.QtWidgets import (
      QVBoxLayout, QWidget, QPushButton, QLabel, QProgressBar
 )
 from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtCore import QUrl, QObject, pyqtSlot, QThread, pyqtSignal
+from PyQt6.QtCore import QUrl, QObject, QPropertyAnimation, QEasingCurve, pyqtSlot, QThread, pyqtSignal
 from PyQt6.QtWebChannel import QWebChannel
+from PyQt6.QtGui import QColor, QPalette, QPainter
+
 import requests, os, json
 from bs4 import BeautifulSoup
-from core.general.Network_utils import generate_user_agent
-from constants.constants import CONFIG_DIR_PATH, VPN_INFO_PATH, _LINUX_CONFIG_DIR_PATH, _LINUX_VPN_INFO_PATH
 
-# CONFIG_DIR_PATH, VPN_INFO_PATH = _LINUX_CONFIG_DIR_PATH, _LINUX_VPN_INFO_PATH # for build deb
+from core.general.Network_utils import generate_user_agent
+from constants.constants import CONFIG_DIR_PATH, VPN_INFO_PATH
 
 class Bridge(QObject):
     def __init__(self, parent=None):
@@ -121,97 +122,6 @@ class RequestWorker(QThread):
                     json.dump(vpn_info, file, ensure_ascii=False, indent=4)
         except Exception as e:
             print(f"Ошибка при обновлении информации: {str(e)}")
-
-# class CaptchaWidget(QWidget):
-#     request_success = pyqtSignal()  
-#     back_requested = pyqtSignal()
-
-#     def __init__(self, sitekey, login, password, url, isConfigAuth, parent=None):
-#         super().__init__(parent)
-#         self.sitekey = sitekey
-#         self.login = login
-#         self.password = password
-#         self.url = url
-#         self.isConfigAuth = isConfigAuth
-
-#         self.browser = QWebEngineView()
-#         self.bridge = Bridge(self)
-#         self.channel = QWebChannel()
-#         self.channel.registerObject("bridge", self.bridge)
-#         self.browser.page().setWebChannel(self.channel)
-        
-#         html_content = f"""
-#         <!DOCTYPE html>
-#         <html>
-#         <head>
-#             <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-#             <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
-#         </head>
-#         <body>
-#             <div class="cf-turnstile" data-sitekey="{self.sitekey}" data-theme="light" data-callback="onCaptchaSuccess"></div>
-#             <div id="success-message"></div>
-
-#             <script>
-#                 window.onCaptchaSuccess = function(token) {{
-#                     if (window.bridge) {{
-#                         window.bridge.handle_token(token);
-#                     }} else {{
-#                         console.error('Мост не инициализирован');
-#                     }}
-#                 }};
-#                 document.addEventListener("DOMContentLoaded", function() {{
-#                     new QWebChannel(qt.webChannelTransport, function(channel) {{
-#                         window.bridge = channel.objects.bridge;
-#                     }});
-#                 }});
-#             </script>
-#         </body>
-#         </html>
-#         """
-#         self.browser.setHtml(html_content, QUrl(self.url))
-
-#         self.submit_button = QPushButton("Подтвердить")
-#         self.submit_button.setEnabled(False)
-#         self.submit_button.clicked.connect(self.send_post_request)
-#         self.submit_button.hide()
-
-#         self.back_button = QPushButton("Назад")
-#         self.back_button.clicked.connect(self.on_back_clicked)  
-
-#         self.status_label = QLabel("Статус: Ожидание решения капчи...")
-#         self.status_label.setWordWrap(True)
-#         self.status_label.setMaximumHeight(50)
-
-#         self.progress_bar = QProgressBar()
-#         self.progress_bar.setRange(0, 0)
-#         self.progress_bar.setVisible(False)
-
-#         layout = QVBoxLayout()
-#         layout.addWidget(self.browser)
-#         layout.addWidget(self.submit_button)
-#         layout.addWidget(self.back_button)
-#         layout.addWidget(self.status_label)
-#         layout.addWidget(self.progress_bar)
-#         self.setLayout(layout)
-
-#         self.setMinimumSize(375, 450)
-#         self.setMaximumSize(375, 450)
-
-#         self.token = None
-#         self.worker = None
-# from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QPushButton, QLabel, 
-#                             QProgressBar, QGraphicsDropShadowEffect, QGraphicsOpacityEffect)
-# from PyQt6.QtWebEngineWidgets import QWebEngineView
-# from PyQt6.QtWebChannel import QWebChannel
-# from PyQt6.QtCore import pyqtSignal, QUrl, QPropertyAnimation, QEasingCurve
-# from PyQt6.QtGui import QColor, QPalette
-
-from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QPushButton, QLabel, 
-                            QProgressBar)
-from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtWebChannel import QWebChannel
-from PyQt6.QtCore import pyqtSignal, QUrl, QPropertyAnimation, QEasingCurve
-from PyQt6.QtGui import QColor, QPalette, QPainter
 
 class CaptchaWidget(QWidget):
     request_success = pyqtSignal()  
